@@ -1,31 +1,81 @@
 #include <iostream>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/freeglut.h>
 
 using namespace std;
 
-static void RenderScene() {
+int width = 600;
+int height = 600;
+int frameCount = 0;
 
-  glClear(GL_COLOR_BUFFER_BIT);
-  glutSwapBuffers();
-
-}
+void initWindow(int argc, char*[]);
+void renderFunction(void);
+void idleFunction(void);
+void timerFunction(int value);
 
 int main(int argc, char* argv[]) {
 
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-  glutInitWindowSize(400, 400);
-  glutInitWindowPosition(200, 200);
-  glutCreateWindow("My First Window with FreeGLUT");
-  glutDisplayFunc(RenderScene);
+  initWindow(argc, argv);
+  
+  GLenum glewInitResult = glewInit();
+  if(GLEW_OK != glewInitResult) {
+    cout << "ERROR: " << glewGetErrorString(glewInitResult);
+    exit(EXIT_FAILURE);
+  }
 
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
+
+  glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
   glutMainLoop();
 
-  cout << "First Window with FreeGLUT!" << endl;;
-
   return 0;
+
+}
+
+void initWindow(int argc, char* argv[]) {
+
+  glutInit(&argc, argv);
+
+  glutSetOption(
+    GLUT_ACTION_ON_WINDOW_CLOSE,
+    GLUT_ACTION_GLUTMAINLOOP_RETURNS
+  );
+
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+  glutInitWindowSize(width, height);
+  glutInitWindowPosition(200, 200);
+  
+  glutCreateWindow("My Window");
+  
+  glutDisplayFunc(renderFunction);
+  glutIdleFunc(idleFunction);
+  glutTimerFunc(0, timerFunction, 0);
+
+}
+
+void renderFunction(void) {
+
+  frameCount++;
+
+  glClear(GL_COLOR_BUFFER_BIT);
+  glutSwapBuffers();
+  glutPostRedisplay();
+
+}
+
+void idleFunction(void) {
+
+  glutPostRedisplay();
+
+}
+
+void timerFunction(int value) {
+
+  if(value != 0)
+    cout << frameCount << " FPS" << endl;
+
+  frameCount = 0;
+  glutTimerFunc(1000, timerFunction, 1);
 
 }
