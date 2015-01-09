@@ -60,7 +60,6 @@ void renderFunction(void) {
 
   glClear(GL_COLOR_BUFFER_BIT);
   glutSwapBuffers();
-  glutPostRedisplay();
 
 }
 
